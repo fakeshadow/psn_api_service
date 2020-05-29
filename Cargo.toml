@@ -1,0 +1,74 @@
+[package]
+name = "psn_api_service"
+version = "0.1.0"
+authors = ["fakeshadow <24548779@qq.com>"]
+edition = "2018"
+
+[dependencies.dotenv]
+version = "0.15.0"
+
+[dependencies.derive_more]
+version = "0.99.7"
+
+[dependencies.failure]
+version = "0.1"
+
+[dependencies.futures-util]
+version = "0.3.5"
+
+[dependencies.headless_chrome]
+git = "https://github.com/fakeshadow/rust-headless-chrome"
+
+[dependencies.mime]
+version = "0.3"
+
+[dependencies.ntex]
+version = "0.1.17"
+features = ["openssl"]
+
+[dependencies.ntex-cors]
+git = "https://github.com/ntex-rs/ntex-extras.git"
+
+[dependencies.ntex-multipart]
+git = "https://github.com/ntex-rs/ntex-extras.git"
+
+[dependencies.ntex_ratelimiter]
+git = "https://github.com/fakeshadow/ntex_ratelimiter.git"
+
+[dependencies.ntex-rt]
+git = "https://github.com/ntex-rs/ntex.git"
+
+[dependencies.openssl]
+version = "0.10"
+
+[dependencies.psn_api_rs]
+git = "https://github.com/fakeshadow/psn_api_rs.git"
+
+[dependencies.reqwest]
+version = "0.10.4"
+features= ["json", "stream"]
+
+[dependencies.serde]
+version = "1.0.110"
+default-features = false
+
+[dependencies.serde_derive]
+version = "1.0.110"
+
+[dependencies.serde_json]
+version = "1.0.53"
+
+[dependencies.serde_urlencoded]
+version = "0.6.1"
+
+[dependencies.tokio]
+version = "0.2.20"
+default-features = false
+features = [ "fs" ]
+
+[dependencies.uuid]
+version = "0.8.1"
+features = [ "v4" ]
+
+[dependencies.bytes]
+version = "0.5.4"
