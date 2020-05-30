@@ -9,7 +9,7 @@ use crate::model::{AdminAuth, SharedGlobalState};
 
 impl<F> FromRequest<F> for AdminAuth {
     type Error = PSNServerError;
-    type Future = Pin<Box<dyn Future<Output = Result<Self, Self::Error>>>>;
+    type Future = Pin<Box<dyn Future<Output=Result<Self, Self::Error>>>>;
 
     fn from_request(req: &HttpRequest, _payload: &mut Payload<PayloadStream>) -> Self::Future {
         let admin_token = req

@@ -28,10 +28,6 @@ class PSNAPI {
     return this.get(url);
   }
 
-  Future<Map<String, dynamic>> getError() async {
-    return this.get('${this.url}/admin?query_type=SolverId&solver_id=c74c122e-ec6d-43f0-b865-da1537b5e76f');
-  }
-
   String _profileUrl(String onlineId) {
     return '${this.url}?query_type=Profile&online_id=$onlineId';
   }

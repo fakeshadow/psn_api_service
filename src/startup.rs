@@ -1,3 +1,5 @@
+use std::future::Future;
+use std::pin::Pin;
 use std::time::Duration;
 
 use ntex::http::header;
@@ -6,11 +8,9 @@ use ntex::web::dev::WebRequest;
 use ntex_cors::CorsFactory;
 use ntex_ratelimiter::{Filter, FilterResult, RateLimiter};
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
-use psn_api_rs::psn::PSN;
+use psn_api_rs::{psn::PSN, traits::PSNRequest};
 
 use crate::model::{SharedGlobalState, SharedMap};
-use std::future::Future;
-use std::pin::Pin;
 
 pub fn global_builder(admin_token: String, api_key: String) -> (SharedGlobalState, SharedMap) {
     let state = SharedGlobalState::new(admin_token, api_key);
@@ -57,6 +57,30 @@ pub fn cors_builder(cors_origin: &str) -> CorsFactory {
 }
 
 pub fn rate_limiter_builder<E>(auth_token: &str) -> RateLimiter<E> {
+    struct MyFilter(String);
+
+    impl<E> Filter<E> for MyFilter {
+        fn filter(&self, req: &WebRequest<E>) -> Pin<Box<dyn Future<Output=FilterResult>>> {
+            let token = req
+                .headers()
+                .get("Authorization")
+                .map(|value| value.to_str().unwrap_or("").to_owned());
+
+            let res = match token {
+                Some(token) => {
+                    if token.contains(self.0.as_str()) {
+                        FilterResult::Skip
+                    } else {
+                        FilterResult::Continue
+                    }
+                }
+                None => FilterResult::Continue,
+            };
+
+            Box::pin(async move { res })
+        }
+    }
+
     RateLimiter::new()
         .max_requests(60)
         .interval(Duration::from_secs(3600))
@@ -64,26 +88,19 @@ pub fn rate_limiter_builder<E>(auth_token: &str) -> RateLimiter<E> {
         .filter(MyFilter(auth_token.to_owned()))
 }
 
-struct MyFilter(String);
+pub fn schedule_refresher(psn: PSN) {
+    ntex_rt::spawn(async move {
+        // lifecycle: This loop will go on until the server is exit.
+        loop {
+            ntex_rt::time::delay_for(Duration::from_secs(900)).await;
+            let pool = psn.get_inner();
+            let inner = pool.get().await;
 
-impl<E> Filter<E> for MyFilter {
-    fn filter(&self, req: &WebRequest<E>) -> Pin<Box<dyn Future<Output = FilterResult>>> {
-        let token = req
-            .headers()
-            .get("Authorization")
-            .map(|value| value.to_str().unwrap_or("").to_owned());
-
-        let res = match token {
-            Some(token) => {
-                if token.contains(self.0.as_str()) {
-                    FilterResult::Skip
-                } else {
-                    FilterResult::Continue
+            if let Ok(mut inner) = inner {
+                if let Ok(client) = PSN::new_client() {
+                    let _ = inner.gen_access_from_refresh(&client).await;
                 }
             }
-            None => FilterResult::Continue,
-        };
-
-        Box::pin(async move { res })
-    }
+        }
+    });
 }

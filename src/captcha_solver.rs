@@ -2,9 +2,9 @@ use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
+use headless_chrome::{Browser, LaunchOptions};
 use headless_chrome::browser::tab::RequestInterceptionDecision;
 use headless_chrome::protocol::network::methods::RequestPattern;
-use headless_chrome::{Browser, LaunchOptions};
 use reqwest::Client;
 
 use crate::error::PSNServerError;
@@ -33,7 +33,7 @@ impl CaptchaSolver {
                     .build()
                     .unwrap(),
             )
-            .unwrap(),
+                .unwrap(),
             api_key,
             client: Client::new(),
         }

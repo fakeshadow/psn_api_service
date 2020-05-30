@@ -17,8 +17,6 @@ pub enum PSNServerError {
     Solver(String),
     #[display(fmt = "Request Timeout")]
     TimeOut,
-    #[display(fmt = "Server is in pause status")]
-    ServerPaused,
 }
 
 impl WebResponseError for PSNServerError {
@@ -36,8 +34,6 @@ impl WebResponseError for PSNServerError {
             }
 
             PSNServerError::Solver(e) => HttpResponse::Ok().json(&ErrorMessage::new(500, e)),
-
-            PSNServerError::ServerPaused => HttpResponse::Ok().json(&ErrorMessage::new(503, &format!("{}", self))),
         }
     }
 }

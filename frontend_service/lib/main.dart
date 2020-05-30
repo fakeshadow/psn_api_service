@@ -44,7 +44,7 @@ class _MyAppState extends State<MyApp> {
         BlocProvider(create: (context) => errorBloc),
       ],
       child: MaterialApp(
-        title: 'PSN_API_SERVER_FRONT_END',
+        title: 'PSN_API_SERVICE_DEMO',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),

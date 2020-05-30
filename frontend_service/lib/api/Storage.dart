@@ -7,7 +7,7 @@ class Storage {
   Storage(this.storage);
 
   static init() {
-    final LocalStorage storage = new LocalStorage('PSN_API_SERVER_DEMO');
+    final LocalStorage storage = new LocalStorage('PSN_API_SERVICE_DEMO');
 
     return Storage(storage);
   }

@@ -39,6 +39,8 @@ async fn main() -> std::io::Result<()> {
     let (state, map) = global_builder(admin_token.clone(), api_key);
     let psn = psn_builder().await;
 
+    schedule_refresher(psn.clone());
+
     let simple = match cors_origin {
         Some(cors_origin) => SimpleEither::L(HttpServer::new(move || {
             let cors = cors_builder(&cors_origin);

@@ -91,7 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 icon: Icon(FlutterIcons.github_ant),
                 label: Text("Source Code"),
                 onPressed: () => html.window.location.href =
-                    "https://github.com/fakeshadow/psn_api_server",
+                    "https://github.com/fakeshadow/psn_api_service",
               ),
               Spacer(),
             ],
