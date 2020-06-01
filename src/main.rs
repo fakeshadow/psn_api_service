@@ -56,7 +56,8 @@ async fn main() -> std::io::Result<()> {
                 .app_data(map.clone())
                 .app_data(psn.clone())
                 .configure(conf_admin)
-                .configure(conf)
+                .service(psn_request)
+                .service(web::resource("/message").route(web::post().to(psn_message_request)))
         })),
         None => SimpleEither::R(HttpServer::new(move || {
             // Remove comment if you want to enable build in rate limiter.
@@ -69,7 +70,8 @@ async fn main() -> std::io::Result<()> {
                 .app_data(map.clone())
                 .app_data(psn.clone())
                 .configure(conf_admin)
-                .configure(conf)
+                .service(psn_request)
+                .service(web::resource("/message").route(web::post().to(psn_message_request)))
         })),
     };
 
@@ -112,13 +114,5 @@ fn conf_admin(cfg: &mut ServiceConfig) {
             .service(get_admin)
             .service(post_admin)
             .service(set_npsso),
-    );
-}
-
-fn conf(cfg: &mut ServiceConfig) {
-    cfg.service(
-        web::scope("")
-            .service(psn_request)
-            .service(web::resource("/message").route(web::post().to(psn_message_request))),
     );
 }

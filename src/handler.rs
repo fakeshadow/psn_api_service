@@ -1,6 +1,7 @@
 use futures_util::StreamExt;
 use ntex::web::{HttpRequest, HttpResponse};
 use ntex_multipart::{Field, Multipart};
+use psn_api_rs::models::MessageThreadResponse;
 use psn_api_rs::psn::PSN;
 use psn_api_rs::traits::PSNRequest;
 use psn_api_rs::types::PSNInner;
@@ -153,7 +154,7 @@ pub(crate) fn handle_message(req: HttpRequest, mut payload: Multipart) {
     ntex_rt::spawn(async move {
         let mut online_id = String::new();
         let mut msg: Option<String> = None;
-        let mut buf: Option<Vec<u8>> = None;
+        let mut buf: Vec<u8> = Vec::new();
 
         while let Some(res) = payload.next().await {
             match res {
@@ -183,7 +184,9 @@ pub(crate) fn handle_message(req: HttpRequest, mut payload: Multipart) {
                                 while let Some(chunk) = field.next().await {
                                     match chunk {
                                         Ok(bytes) => match match_field(&field) {
-                                            FieldType::Picture => buf = Some(bytes.to_vec()),
+                                            FieldType::Picture => {
+                                                buf.extend_from_slice(bytes.as_ref())
+                                            }
                                             _ => break,
                                         },
                                         Err(_e) => (),
@@ -204,13 +207,19 @@ pub(crate) fn handle_message(req: HttpRequest, mut payload: Multipart) {
             return;
         }
 
-        if msg.is_none() && buf.is_none() {
+        if msg.is_none() && buf.is_empty() {
             return;
         }
 
+        let buf = if buf.is_empty() {
+            None
+        } else {
+            Some(buf.as_slice())
+        };
+
         let psn = req.psn();
         let _ = psn
-            .send_message_with_buf(&online_id, msg.as_deref(), buf.as_deref())
+            .send_message_with_buf::<MessageThreadResponse>(&online_id, msg.as_deref(), buf)
             .await;
     });
 }
