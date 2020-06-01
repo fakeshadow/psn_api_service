@@ -60,7 +60,7 @@ pub fn rate_limiter_builder<E>(auth_token: &str) -> RateLimiter<E> {
     struct MyFilter(String);
 
     impl<E> Filter<E> for MyFilter {
-        fn filter(&self, req: &WebRequest<E>) -> Pin<Box<dyn Future<Output=FilterResult>>> {
+        fn filter(&self, req: &WebRequest<E>) -> Pin<Box<dyn Future<Output = FilterResult>>> {
             let token = req
                 .headers()
                 .get("Authorization")

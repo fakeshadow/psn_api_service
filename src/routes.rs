@@ -1,7 +1,7 @@
 use ntex::web::{
     self,
-    HttpRequest,
-    HttpResponse, types::{Json, Query},
+    types::{Json, Query},
+    HttpRequest, HttpResponse,
 };
 use ntex_multipart::Multipart;
 use psn_api_rs::{
