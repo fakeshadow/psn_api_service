@@ -41,9 +41,9 @@ checksum = "b585a98a234c46fc563103e9278c9391fde1f4e6850334da895d27edb9580f62"
 
 [[package]]
 name = "async-trait"
-version = "0.1.31"
+version = "0.1.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "26c4f3195085c36ea8d24d32b2f828d23296a9370a28aa39d111f6f16bef9f3b"
+checksum = "0eb7f9ad01405feb3c1dac82463038945cf88eea4569acaf3ad662233496dd96"
 dependencies = [
  "proc-macro2 1.0.18",
  "quote 1.0.6",
@@ -1132,7 +1132,7 @@ dependencies = [
 [[package]]
 name = "ntex_ratelimiter"
 version = "0.1.0"
-source = "git+https://github.com/fakeshadow/ntex_ratelimiter.git#101ef9683d2915f6edf05f7d4f4bdf18bcf98f2b"
+source = "git+https://github.com/fakeshadow/ntex_ratelimiter.git#9d355514e14a024bfd1fa5afc22a15408534dc43"
 dependencies = [
  "derive_more 0.99.7",
  "fxhash",
@@ -1936,7 +1936,7 @@ dependencies = [
 [[package]]
 name = "tang-rs"
 version = "0.1.3"
-source = "git+https://github.com/fakeshadow/tang_rs.git#5a8a99c79f8453fa3756903365b2abbe3779d8d8"
+source = "git+https://github.com/fakeshadow/tang_rs.git#6bf7a0814ce43579933b3d115f9298b5863b8868"
 
 [[package]]
 name = "tempfile"

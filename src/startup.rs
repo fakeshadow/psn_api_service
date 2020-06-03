@@ -6,7 +6,7 @@ use ntex::http::header;
 use ntex::server::openssl::SslAcceptorBuilder;
 use ntex::web::dev::WebRequest;
 use ntex_cors::CorsFactory;
-use ntex_ratelimiter::{Filter, FilterResult, RateLimiter};
+use ntex_ratelimiter::{DefaultIdentifier, Filter, FilterResult, RateLimiter};
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 use psn_api_rs::{psn::PSN, traits::PSNRequest};
 
@@ -56,36 +56,36 @@ pub fn cors_builder(cors_origin: &str) -> CorsFactory {
         .finish()
 }
 
-pub fn rate_limiter_builder<E>(auth_token: &str) -> RateLimiter<E> {
-    struct MyFilter(String);
+#[derive(Clone)]
+pub struct MyFilter(String);
 
-    impl<E> Filter<E> for MyFilter {
-        fn filter(&self, req: &WebRequest<E>) -> Pin<Box<dyn Future<Output = FilterResult>>> {
-            let token = req
-                .headers()
-                .get("Authorization")
-                .map(|value| value.to_str().unwrap_or("").to_owned());
+impl<E> Filter<E> for MyFilter {
+    fn filter(&self, req: &WebRequest<E>) -> Pin<Box<dyn Future<Output = FilterResult>>> {
+        let token = req
+            .headers()
+            .get("Authorization")
+            .map(|value| value.to_str().unwrap_or("").to_owned());
 
-            let res = match token {
-                Some(token) => {
-                    if token.contains(self.0.as_str()) {
-                        FilterResult::Skip
-                    } else {
-                        FilterResult::Continue
-                    }
+        let res = match token {
+            Some(token) => {
+                if token.contains(self.0.as_str()) {
+                    FilterResult::Skip
+                } else {
+                    FilterResult::Continue
                 }
-                None => FilterResult::Continue,
-            };
+            }
+            None => FilterResult::Continue,
+        };
 
-            Box::pin(async move { res })
-        }
+        Box::pin(async move { res })
     }
+}
 
-    RateLimiter::new()
+pub fn rate_limiter_builder<E>(auth_token: &str) -> RateLimiter<E, DefaultIdentifier, MyFilter> {
+    RateLimiter::new(DefaultIdentifier, MyFilter(auth_token.into()))
         .max_requests(60)
         .interval(Duration::from_secs(3600))
         .recycle_interval(Duration::from_secs(60))
-        .filter(MyFilter(auth_token.to_owned()))
 }
 
 pub fn schedule_refresher(psn: PSN) {
